@@ -12,6 +12,7 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -48,8 +49,15 @@ public class MicroServiceImpl implements MicroService {
     @Override
     public TxState getState() {
         TxState state = new TxState();
-        String ipAddress = discoveryClient.getLocalServiceInstance().getHost();
-        if(!isIp(ipAddress)){
+        String ipAddress = "";
+        //TODO Spring boot 2.0.0没有discoveryClient.getLocalServiceInstance() 用InetAddress获取host;modify by young
+        //String ipAddress = discoveryClient.getLocalServiceInstance().getHost();
+        try {
+            ipAddress = InetAddress.getLocalHost().getHostAddress();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (!isIp(ipAddress)) {
             ipAddress = "127.0.0.1";
         }
         state.setIp(ipAddress);
@@ -66,6 +74,7 @@ public class MicroServiceImpl implements MicroService {
         state.setSlbList(getServices());
         return state;
     }
+
 
     private List<String> getServices(){
         List<String> urls = new ArrayList<>();

@@ -63,18 +63,23 @@ public class TransactionServerFactoryServiceImpl implements TransactionServerFac
         }
 
 
-        /** 分布式事务已经开启，业务进行中 **/
+        //分布式事务已经开启，业务进行中 **/
         if (info.getTxTransactionLocal() != null || StringUtils.isNotEmpty(info.getTxGroupId())) {
             //检查socket通讯是否正常 （第一次执行时启动txRunningTransactionServer的业务处理控制，然后嵌套调用其他事务的业务方法时都并到txInServiceTransactionServer业务处理下）
             if (SocketManager.getInstance().isNetState()) {
                 if (info.getTxTransactionLocal() != null) {
                     return txDefaultTransactionServer;
                 } else {
-                    if(transactionControl.isNoTransactionOperation() // 表示整个应用没有获取过DB连接
-                        || info.getTransaction().readOnly()) { //无事务业务的操作
-                        return txRunningNoTransactionServer;
-                    }else {
+//                    if(transactionControl.isNoTransactionOperation() // 表示整个应用没有获取过DB连接
+//                        || info.getTransaction().readOnly()) { //无事务业务的操作
+//                        return txRunningNoTransactionServer;
+//                    }else {
+//                        return txRunningTransactionServer;
+//                    }
+                    if(!transactionControl.isNoTransactionOperation()) { //TODO 有事务业务的操作
                         return txRunningTransactionServer;
+                    }else {
+                        return txRunningNoTransactionServer;
                     }
                 }
             } else {
@@ -82,7 +87,7 @@ public class TransactionServerFactoryServiceImpl implements TransactionServerFac
                 return txDefaultTransactionServer;
             }
         }
-        /*********分布式事务处理逻辑*结束***********/
+        //分布式事务处理逻辑*结束***********/
 
         return txDefaultTransactionServer;
     }

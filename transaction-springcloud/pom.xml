@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.codingapi</groupId>
 		<artifactId>tx-lcn</artifactId>
-		<version>4.2.0-SNAPSHOT</version>
+		<version>4.2.1-SNAPSHOT</version>
 	</parent>
 
 	<groupId>com.codingapi</groupId>
